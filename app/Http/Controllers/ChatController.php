@@ -18,12 +18,7 @@ class ChatController extends Controller
         ]);
     }
 
-    public function getMessages(Request $request, ?int $id): \Illuminate\Http\JsonResponse
-    {
-        return response()->json(Message::getAllMessages($id, $request->user()->id));
-    }
-
-    public function store(StoreMessageRequest $request)
+    public function store(StoreMessageRequest $request): \Illuminate\Http\RedirectResponse
     {
         $message = Message::create([
             'receiver_id' => $request->input('receiver_id'),
@@ -33,6 +28,12 @@ class ChatController extends Controller
             'updated_at' => now(),
         ]);
         MessageSent::dispatch($message);
+
         return back();
+    }
+
+    public function getMessages(Request $request, ?int $id): \Illuminate\Http\JsonResponse
+    {
+        return response()->json(Message::getAllMessages($id, $request->user()->id));
     }
 }
