@@ -60,16 +60,16 @@ php artisan env:decrypt --key=base64:38xX2y/YNj5miD46BIpDefWXefb+3H84Qr8QKJ1IDgE
 php artisan migrate
 ```
 
-7. Start the local development server
-
-```bash
-php artisan serve
-```
-
-8. Run npm watcher to compile assets
+7. Compile the assets
 
 ```bash
 npm run dev
+```
+
+8. Start the local development server
+
+```bash
+php artisan serve
 ```
 
 9. Run the reverb socket server
