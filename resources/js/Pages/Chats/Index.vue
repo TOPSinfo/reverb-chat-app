@@ -12,8 +12,14 @@ const selectedUser = toRef(null);
 const page = usePage();
 const user = page.props.auth.user;
 
+let typing = toRef({
+    status: false,
+    name: ''
+});
+
 const onSelectUser = (user) => {
     selectedUser.value = user;
+    typing.value.status = false;
     getMessages();
 };
 
@@ -26,6 +32,16 @@ onMounted(() => {
     Echo.private(`App.Models.User.${user.id}`)
         .listen('MessageSent', (event) => {
             messages.value.push(event.message);
+        })
+        .listenForWhisper('typing', (event) => {
+            if (event.id === selectedUser.value.id) {
+                typing.value.status = true;
+                typing.value.name = event.name;
+            }
+        })
+        .listenForWhisper('stop-typing', (event) => {
+            typing.value.status = false;
+            typing.value.name = '';
         });
 });
 
@@ -51,7 +67,8 @@ onUnmounted(() => {
                 <Contacts :users="users" @userSelected='onSelectUser'/>
             </div>
 
-            <ChatArea v-if="selectedUser" :fromUser="user" :messages='messages' :toUser='selectedUser'/>
+            <ChatArea v-if="selectedUser" :fromUser="user" :messages='messages' :toUser='selectedUser'
+                      :typing="typing"/>
 
         </div>
     </AuthenticatedLayout>

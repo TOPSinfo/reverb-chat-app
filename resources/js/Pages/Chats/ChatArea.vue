@@ -2,8 +2,9 @@
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import {useForm, usePage} from "@inertiajs/vue3";
+import {debounce} from "lodash";
 
-const props = defineProps(['toUser', 'messages']);
+const props = defineProps(['toUser', 'messages', 'typing']);
 const form = useForm({
     message: '',
     receiver_id: null,
@@ -11,7 +12,6 @@ const form = useForm({
 
 const page = usePage();
 const authUser = page.props.auth.user;
-
 
 const handleSubmit = () => {
     form.receiver_id = props.toUser.id;
@@ -21,6 +21,23 @@ const handleSubmit = () => {
     });
     form.reset();
 };
+
+const userStopTyping = debounce(async () => {
+    Echo.private(`App.Models.User.${props.toUser.id}`)
+        .whisper('stop-typing', {
+            name: authUser.name,
+            id: authUser.id,
+        });
+}, 500);
+
+const userTyping = () => {
+    Echo.private(`App.Models.User.${props.toUser.id}`)
+        .whisper('typing', {
+            name: authUser.name,
+            id: authUser.id,
+        });
+};
+
 </script>
 <template>
     <div v-if="props.toUser" class="flex-1">
@@ -66,11 +83,19 @@ const handleSubmit = () => {
                         autofocus
                         class="mt-1 block w-full"
                         type="text"
+                        @keydown="userTyping"
+                        @keyup="userStopTyping"
                     />
                     <button :disabled="form.processing"
                             class="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2"
-                            type="submit">Send
+                            type="submit"
+                    >Send
                     </button>
+                </div>
+                <div>
+                    <span v-if="props.typing.status" class="text-gray-500 text-sm">
+                        {{ props.typing.name }} is typing...
+                    </span>
                 </div>
                 <div>
                     <InputError :message="form.errors.message" class="mt-2"/>
