@@ -14,7 +14,7 @@ class ChatController extends Controller
     public function index(Request $request): \Inertia\Response
     {
         return Inertia::render('Chats/Index', [
-            'users' => User::all('id', 'name'),
+            'users' => User::getUsersWithLatestMessage(),
         ]);
     }
 

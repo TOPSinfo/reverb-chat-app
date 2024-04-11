@@ -27,6 +27,7 @@ const handleUserClick = (user) => {
             </div>
             <div class="flex-1">
                 <h2 class="text-lg font-semibold">{{ user.name }}</h2>
+                <p v-if="user.latestMessage" class="text-gray-600">{{ user.latestMessage.body }}</p>
             </div>
         </div>
     </div>
