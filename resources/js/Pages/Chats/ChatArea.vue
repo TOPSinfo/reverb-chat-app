@@ -28,7 +28,7 @@ const userStopTyping = debounce(async () => {
             name: authUser.name,
             id: authUser.id,
         });
-}, 500);
+}, 1000);
 
 const userTyping = () => {
     Echo.private(`App.Models.User.${props.toUser.id}`)
@@ -37,7 +37,6 @@ const userTyping = () => {
             id: authUser.id,
         });
 };
-
 </script>
 <template>
     <div v-if="props.toUser" class="flex-1">
@@ -48,7 +47,7 @@ const userTyping = () => {
 
         <!-- Chat Messages -->
         <div class="h-screen overflow-y-auto p-4 pb-36">
-            <div v-for="message in props.messages">
+            <div v-for="(message,index) in props.messages" :key="index">
                 <div v-if="message.sender_id === props.toUser.id" class="flex mb-4 cursor-pointer">
                     <div :title="props.toUser.name" class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
                         <img :src="`https://ui-avatars.com/api/?name=${props.toUser.name}`"

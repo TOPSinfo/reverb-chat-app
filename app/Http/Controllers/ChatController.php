@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Events\MessageSent;
+use App\Events\UserOffline;
+use App\Events\UserOnline;
 use App\Http\Requests\StoreMessageRequest;
 use App\Models\Message;
 use App\Models\User;

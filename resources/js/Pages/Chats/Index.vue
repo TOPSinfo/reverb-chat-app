@@ -12,6 +12,7 @@ const selectedUser = toRef(null);
 const page = usePage();
 const user = page.props.auth.user;
 
+let onlineUsers = toRef([]);
 let typing = toRef({
     status: false,
     name: ''
@@ -43,10 +44,21 @@ onMounted(() => {
             typing.value.status = false;
             typing.value.name = '';
         });
+
+    Echo.join(`chat`)
+        .joining((user) => {
+            onlineUsers.value.push(user);
+        })
+        .leaving((user) => {
+            onlineUsers.value = onlineUsers.value.filter(u => u.id !== user.id);
+        }).here((users) => {
+        onlineUsers.value = users;
+    });
 });
 
 onUnmounted(() => {
     Echo.leave(`App.Models.User.${user.id}`);
+    Echo.leave(`chat`);
 });
 
 </script>
@@ -64,7 +76,7 @@ onUnmounted(() => {
                 </header>
 
                 <!-- Contact List -->
-                <Contacts :users="users" @userSelected='onSelectUser'/>
+                <Contacts :online-users="onlineUsers" :users="users" @userSelected='onSelectUser'/>
             </div>
 
             <ChatArea v-if="selectedUser" :fromUser="user" :messages='messages' :toUser='selectedUser'
